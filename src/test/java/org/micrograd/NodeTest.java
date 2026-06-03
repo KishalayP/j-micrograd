@@ -3,6 +3,7 @@ package org.micrograd;
 import org.junit.Test;
 import org.micrograd.core.Node;
 import org.micrograd.functions.MathFunctions;
+import org.micrograd.util.DrawGraph;
 
 import static org.junit.Assert.assertEquals;
 
@@ -154,6 +155,8 @@ public class NodeTest {
         assertEquals("w1.grad should equal x1 * n.grad", x1.value * expectedNGrad2, w1.grad, 1e-6f);
         assertEquals("x2.grad should equal w2 * n.grad", w2.value * expectedNGrad2, x2.grad, 1e-6f);
         assertEquals("w2.grad should equal x2 * n.grad", x2.value * expectedNGrad2, w2.grad, 1e-6f);
+
+        System.out.println(DrawGraph.getGraphDisplayString(o));
     }
 
     @Test
