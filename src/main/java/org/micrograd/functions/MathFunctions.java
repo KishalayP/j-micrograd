@@ -42,6 +42,43 @@ public enum MathFunctions {
         }
     },
 
+    SUB {
+        @Override
+        public String getRepresentation(String x) {
+            return "";
+        }
+
+        @Override
+        public String getRepresentation(String x, String y) {
+            return "(%s - %s)".formatted(x, y);
+        }
+
+        @Override
+        public float applyFunction(float x) {
+            return 0;
+        }
+
+        @Override
+        public float applyFunction(float x, float y) {
+            return x - y;
+        }
+
+        @Override
+        public void backFillGradVal(Node resultNode, List<Node> operandNodes) {
+            if (operandNodes != null && !operandNodes.isEmpty()) {
+                Node firstOperNode = operandNodes.getFirst();
+                var secondOperNode = operandNodes.get(1);
+                firstOperNode.grad += resultNode.grad;
+                secondOperNode.grad += resultNode.grad;
+            }
+        }
+
+        @Override
+        public String toString() {
+            return "-";
+        }
+    },
+
     MUL {
         @Override
         public String getRepresentation(String x) {
@@ -68,14 +105,124 @@ public enum MathFunctions {
             if (operandNodes != null && !operandNodes.isEmpty()) {
                 Node firstOperNode = operandNodes.getFirst();
                 var secondOperNode = operandNodes.get(1);
-                firstOperNode.grad += secondOperNode.value * resultNode.grad;
-                secondOperNode.grad += firstOperNode.value * resultNode.grad;
+                firstOperNode.grad += resultNode.grad * secondOperNode.value;
+                secondOperNode.grad += resultNode.grad * firstOperNode.value;
             }
         }
 
         @Override
         public String toString() {
             return "*";
+        }
+    },
+
+    DIV {
+        @Override
+        public String getRepresentation(String x) {
+            return null;
+        }
+
+        @Override
+        public String getRepresentation(String x, String y) {
+            return "(%s / %s)".formatted(x, y);
+        }
+
+        @Override
+        public float applyFunction(float x) {
+            return 0;
+        }
+
+        @Override
+        public float applyFunction(float x, float y) {
+            return x / y;
+        }
+
+        @Override
+        public void backFillGradVal(Node resultNode, List<Node> operandNodes) {
+            if (operandNodes != null && !operandNodes.isEmpty()) {
+                Node firstOperNode = operandNodes.getFirst();
+                var secondOperNode = operandNodes.get(1);
+                // grad = derivative result which is backfilled from operations done using result * local derivative of operation used to get result
+                firstOperNode.grad += resultNode.grad * (1 / secondOperNode.value);
+                secondOperNode.grad += resultNode.grad * (1 / firstOperNode.value);
+            }
+        }
+
+        @Override
+        public String toString() {
+            return "/";
+        }
+    },
+
+    POW {
+        @Override
+        public String getRepresentation(String x) {
+            return "";
+        }
+
+        @Override
+        public String getRepresentation(String x, String y) {
+            return "(%s^%s)".formatted(x, y);
+        }
+
+        @Override
+        public float applyFunction(float x) {
+            return 0;
+        }
+
+        @Override
+        public float applyFunction(float x, float y) {
+            return (float) Math.pow(x, y);
+        }
+
+        @Override
+        public void backFillGradVal(Node resultNode, List<Node> operandNodes) {
+            if (operandNodes != null && !operandNodes.isEmpty()) {
+                var base = operandNodes.getFirst().value;
+                var power = operandNodes.get(1).value;
+                // f(x) = x^y, then diff is f'(x) = y * (x*(y-1))
+                var gradOfResultFunction = power * Math.pow(base, power - 1);
+                operandNodes.getFirst().grad += (float) (resultNode.grad * gradOfResultFunction);
+            }
+        }
+
+        @Override
+        public String toString() {
+            return "pow";
+        }
+    },
+
+    EXP {
+        @Override
+        public String getRepresentation(String x) {
+            return "(exp^%s)".formatted(x);
+        }
+
+        @Override
+        public String getRepresentation(String x, String y) {
+            return "";
+        }
+
+        @Override
+        public float applyFunction(float x) {
+            return (float) Math.exp(x);
+        }
+
+        @Override
+        public float applyFunction(float x, float y) {
+            return 0;
+        }
+
+        @Override
+        public void backFillGradVal(Node resultNode, List<Node> operandNodes) {
+            if (operandNodes != null && !operandNodes.isEmpty()) {
+                operandNodes.getFirst().grad += resultNode.grad * resultNode.value;
+            }
+        }
+
+        @Override
+        public String toString() {
+            return "exp";
         }
     },
 
@@ -104,7 +251,8 @@ public enum MathFunctions {
         @Override
         public void backFillGradVal(Node resultNode, List<Node> operandNodes) {
             if (operandNodes != null && !operandNodes.isEmpty()) {
-                operandNodes.getFirst().grad += 1 - (resultNode.value * resultNode.value);
+                var gradOfResultFunction = 1 - (resultNode.value * resultNode.value);
+                operandNodes.getFirst().grad += resultNode.grad * gradOfResultFunction;
             }
         }
 
