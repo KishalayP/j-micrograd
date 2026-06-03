@@ -145,7 +145,7 @@ public enum MathFunctions {
                 Node firstOperNode = operandNodes.getFirst();
                 var secondOperNode = operandNodes.get(1);
                 firstOperNode.grad += resultNode.grad * (1 / secondOperNode.value);
-                secondOperNode.grad += resultNode.grad * (1 / firstOperNode.value);
+                secondOperNode.grad += resultNode.grad * -(firstOperNode.value / (secondOperNode.value * secondOperNode.value));
             }
         }
 

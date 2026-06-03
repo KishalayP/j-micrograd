@@ -17,6 +17,12 @@ public class Node {
     public List<Node> prev;
     public MathFunctions operatorFunction;
 
+    public Node(String name, float value) {
+        this.name = name;
+        this.value = value;
+        this.grad = 0.0f;
+    }
+
     public Node(String name, Node operNode, MathFunctions operatorFunction) {
         this.name = name.isEmpty() ? operatorFunction.getRepresentation(operNode.name) : name;
         this.value = operatorFunction.applyFunction(operNode.value);
@@ -31,12 +37,6 @@ public class Node {
         this.operatorFunction = operatorFunction;
     }
 
-    public Node(String name, float value) {
-        this.name = name;
-        this.value = value;
-        this.grad = 0.0f;
-    }
-
     public Node add(String newName, Node toOperate) {
         return new Node(newName, this, toOperate, ADD);
     }
@@ -45,12 +45,48 @@ public class Node {
         return new Node("", this, toOperate, ADD);
     }
 
+    public Node subtract(String newName, Node toOperate) {
+        return new Node(newName, this, toOperate, SUB);
+    }
+
+    public Node subtract(Node toOperate) {
+        return new Node("", this, toOperate, SUB);
+    }
+
     public Node multiply(String newName, Node toOperate) {
         return new Node(newName, this, toOperate, MUL);
     }
 
     public Node multiply(Node toOperate) {
         return new Node("", this, toOperate, MUL);
+    }
+
+    public Node divide(String newName, Node toOperate) {
+        return new Node(newName, this, toOperate, DIV);
+    }
+
+    public Node divide(Node toOperate) {
+        return new Node("", this, toOperate, DIV);
+    }
+
+    public Node applyFunction(String newName, float toOperate, MathFunctions activationFunction) {
+        return new Node(newName, this, new Node("__" + newName, toOperate), activationFunction);
+    }
+
+    public Node applyFunction(String newName, Node toOperate, MathFunctions activationFunction) {
+        return new Node(newName, this, toOperate, activationFunction);
+    }
+
+    public Node applyFunction(String newName, MathFunctions activationFunction) {
+        return new Node(newName, this, activationFunction);
+    }
+
+    public Node applyFunction(Node toOperate, MathFunctions activationFunction) {
+        return new Node("", this, toOperate, activationFunction);
+    }
+
+    public Node applyFunction(MathFunctions activationFunction) {
+        return new Node("", this, activationFunction);
     }
 
     public Node getActivationVal(String name, MathFunctions activationFunction) {
