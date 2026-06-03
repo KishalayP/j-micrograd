@@ -5,6 +5,7 @@ import org.micrograd.core.Node;
 import java.util.List;
 
 public enum MathFunctions {
+
     ADD {
         @Override
         public String getRepresentation(String x) {
