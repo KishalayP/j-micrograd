@@ -106,6 +106,7 @@ public enum MathFunctions {
             if (operandNodes != null && !operandNodes.isEmpty()) {
                 Node firstOperNode = operandNodes.getFirst();
                 var secondOperNode = operandNodes.get(1);
+                // grad = derivative result which is backfilled from operations done using result * local derivative of operation used to get result
                 firstOperNode.grad += resultNode.grad * secondOperNode.value;
                 secondOperNode.grad += resultNode.grad * firstOperNode.value;
             }
@@ -143,7 +144,6 @@ public enum MathFunctions {
             if (operandNodes != null && !operandNodes.isEmpty()) {
                 Node firstOperNode = operandNodes.getFirst();
                 var secondOperNode = operandNodes.get(1);
-                // grad = derivative result which is backfilled from operations done using result * local derivative of operation used to get result
                 firstOperNode.grad += resultNode.grad * (1 / secondOperNode.value);
                 secondOperNode.grad += resultNode.grad * (1 / firstOperNode.value);
             }
