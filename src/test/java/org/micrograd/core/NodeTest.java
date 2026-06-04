@@ -1,7 +1,6 @@
-package org.micrograd;
+package org.micrograd.core;
 
 import org.junit.Test;
-import org.micrograd.core.Node;
 import org.micrograd.functions.MathFunctions;
 import org.micrograd.util.DrawGraph;
 

@@ -53,6 +53,10 @@ public class Node {
         return new Node("", this, toOperate, SUB);
     }
 
+    public Node multiply(String newName, float toOperate) {
+        return new Node(newName, this, new Node("__" + newName, toOperate), MUL);
+    }
+
     public Node multiply(String newName, Node toOperate) {
         return new Node(newName, this, toOperate, MUL);
     }
