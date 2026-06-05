@@ -1,8 +1,9 @@
 package org.micrograd.core;
 
 import junit.framework.TestCase;
-import org.micrograd.functions.ErrorMathFunctions;
-import org.micrograd.functions.MathFunctions;
+import org.micrograd.functions.registry.ErrorMathFunctions;
+import org.micrograd.functions.registry.MathFunctions;
+import org.micrograd.model.MLPTrainingResult;
 
 import java.util.ArrayList;
 import java.util.List;

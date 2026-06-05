@@ -1,7 +1,9 @@
 package org.micrograd.util;
 
 import org.micrograd.core.Node;
-import org.micrograd.functions.MathFunctions;
+import org.micrograd.functions.api.MathFunction;
+import org.micrograd.functions.registry.MathFunctions;
+import org.micrograd.model.Position;
 
 import java.util.*;
 
@@ -331,7 +333,7 @@ public class DrawGraph {
         // Draw horizontal line from mid-point to target, leaving space for a
         // label just before the arrow head if present. Start at midX so the
         // horizontal segment visually connects to the '+' we placed above.
-        MathFunctions oper = toNode.operatorFunction;
+        MathFunction oper = toNode.operatorFunction;
         String label = null;
         int labelLen = 0;
         if (oper != null) {

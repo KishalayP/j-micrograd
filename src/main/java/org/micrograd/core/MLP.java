@@ -1,13 +1,14 @@
 package org.micrograd.core;
 
-import org.micrograd.functions.ErrorMathFunctions;
-import org.micrograd.functions.MathFunctions;
-import org.micrograd.functions.Utils;
+import org.micrograd.functions.api.ErrorFunction;
+import org.micrograd.functions.api.MathFunction;
+import org.micrograd.model.MLPTrainingResult;
+import org.micrograd.util.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.micrograd.functions.Utils.createNodeName;
+import static org.micrograd.util.Utils.createNodeName;
 
 public class MLP {
 
@@ -24,7 +25,7 @@ public class MLP {
     }
 
     public MLPTrainingResult train(int epoch, float stepSize, List<List<Float>> inputList, List<List<Float>> expectedOutput,
-                                   MathFunctions activationFunction, ErrorMathFunctions lossFunction) {
+                                   MathFunction activationFunction, ErrorFunction lossFunction) {
         MLPTrainingResult result = null;
         for (int i = 0; i < epoch; i++) {
             //Forward Pass
@@ -56,7 +57,7 @@ public class MLP {
     }
 
     private MLPTrainingResult trainAndGetLoss(List<List<Float>> inputList, List<List<Float>> expectedOutputs,
-                                              MathFunctions activationFunction, ErrorMathFunctions lossFunction) {
+                                              MathFunction activationFunction, ErrorFunction lossFunction) {
         if (inputList.size() != expectedOutputs.size()) {
             throw new IllegalArgumentException("Number of inputs and expected outputs must match");
         }
@@ -93,7 +94,7 @@ public class MLP {
         return result;
     }
 
-    private List<Node> getResult(List<Float> input, MathFunctions activationFunction) {
+    private List<Node> getResult(List<Float> input, MathFunction activationFunction) {
         List<Node> xList = Utils.createListOfNodes("mlp", "x", input);
         List<List<Node>> activatedLayers = stimulateMLP(xList, activationFunction);
 
@@ -113,7 +114,7 @@ public class MLP {
         }
     }
 
-    private List<List<Node>> stimulateMLP(List<Node> input, MathFunctions activationFunction) {
+    private List<List<Node>> stimulateMLP(List<Node> input, MathFunction activationFunction) {
         var res = new ArrayList<List<Node>>();
         List<Node> currentInput = input;
         for (Layer layer : layers) {

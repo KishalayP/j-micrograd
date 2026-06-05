@@ -1,4 +1,6 @@
-package org.micrograd.core;
+package org.micrograd.model;
+
+import org.micrograd.core.Node;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,9 +8,9 @@ import java.util.List;
 public class MLPTrainingResult {
 
     String name;
-    Node loss;
+    public Node loss;
     // now each element is the output vector (List<Node>) for one sample
-    List<List<Node>> predictions;
+    public List<List<Node>> predictions;
 
     public MLPTrainingResult(String name) {
         this.name = name;

@@ -1,12 +1,12 @@
 package org.micrograd.core;
 
-import org.micrograd.functions.MathFunctions;
-import org.micrograd.functions.Utils;
+import org.micrograd.functions.api.MathFunction;
+import org.micrograd.util.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.micrograd.functions.Utils.createNodeName;
+import static org.micrograd.util.Utils.createNodeName;
 
 public class Neuron {
 
@@ -20,7 +20,7 @@ public class Neuron {
         this.bias = new Node(createNodeName(this.name, "b"), Utils.randomFloatInRange(-1, 1));
     }
 
-    public Node stimulateNeuron(List<Node> input, MathFunctions mathFunctions) {
+    public Node stimulateNeuron(List<Node> input, MathFunction mathFunctions) {
         return getSumOfSynapsesNodes(input).getActivationVal(createNodeName(name, "r"), mathFunctions);
     }
 

@@ -1,4 +1,4 @@
-package org.micrograd.functions;
+package org.micrograd.util;
 
 import org.micrograd.core.Node;
 

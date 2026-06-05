@@ -1,7 +1,7 @@
 package org.micrograd.core;
 
 import org.junit.Test;
-import org.micrograd.functions.MathFunctions;
+import org.micrograd.functions.registry.MathFunctions;
 import org.micrograd.util.DrawGraph;
 
 import static org.junit.Assert.assertEquals;

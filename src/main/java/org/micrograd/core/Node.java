@@ -1,10 +1,9 @@
 package org.micrograd.core;
 
-import org.micrograd.functions.MathFunctions;
-
+import org.micrograd.functions.api.MathFunction;
 import java.util.*;
 
-import static org.micrograd.functions.MathFunctions.*;
+import static org.micrograd.functions.registry.MathFunctions.*;
 
 public class Node {
 
@@ -12,7 +11,7 @@ public class Node {
     public float value;
     public float grad;
     public List<Node> prev;
-    public MathFunctions operatorFunction;
+    public MathFunction operatorFunction;
 
     public Node(String name, float value) {
         this.name = name;
@@ -20,14 +19,14 @@ public class Node {
         this.grad = 0.0f;
     }
 
-    public Node(String name, Node operNode, MathFunctions operatorFunction) {
+    public Node(String name, Node operNode, MathFunction operatorFunction) {
         this.name = name.isEmpty() ? operatorFunction.getRepresentation(operNode.name) : name;
         this.value = operatorFunction.applyFunction(operNode.value);
         this.prev = List.of(operNode);
         this.operatorFunction = operatorFunction;
     }
 
-    public Node(String name, Node firstOperNode, Node secondOperNode, MathFunctions operatorFunction) {
+    public Node(String name, Node firstOperNode, Node secondOperNode, MathFunction operatorFunction) {
         this.name = name.isEmpty() ? operatorFunction.getRepresentation(firstOperNode.name, secondOperNode.name) : name;
         this.value = operatorFunction.applyFunction(firstOperNode.value, secondOperNode.value);
         this.prev = List.of(firstOperNode, secondOperNode);
@@ -70,31 +69,31 @@ public class Node {
         return new Node("", this, toOperate, DIV);
     }
 
-    public Node applyFunction(String newName, float toOperate, MathFunctions activationFunction) {
+    public Node applyFunction(String newName, float toOperate, MathFunction activationFunction) {
         return new Node(newName, this, new Node("__" + newName, toOperate), activationFunction);
     }
 
-    public Node applyFunction(String newName, Node toOperate, MathFunctions activationFunction) {
+    public Node applyFunction(String newName, Node toOperate, MathFunction activationFunction) {
         return new Node(newName, this, toOperate, activationFunction);
     }
 
-    public Node applyFunction(String newName, MathFunctions activationFunction) {
+    public Node applyFunction(String newName, MathFunction activationFunction) {
         return new Node(newName, this, activationFunction);
     }
 
-    public Node applyFunction(Node toOperate, MathFunctions activationFunction) {
+    public Node applyFunction(Node toOperate, MathFunction activationFunction) {
         return new Node("", this, toOperate, activationFunction);
     }
 
-    public Node applyFunction(MathFunctions activationFunction) {
+    public Node applyFunction(MathFunction activationFunction) {
         return new Node("", this, activationFunction);
     }
 
-    public Node getActivationVal(String name, MathFunctions activationFunction) {
+    public Node getActivationVal(String name, MathFunction activationFunction) {
         return new Node(name, this, activationFunction);
     }
 
-    public Node getActivationVal(MathFunctions activationFunction) {
+    public Node getActivationVal(MathFunction activationFunction) {
         return new Node("", this, activationFunction);
     }
 

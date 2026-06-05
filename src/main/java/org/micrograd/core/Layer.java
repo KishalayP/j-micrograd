@@ -1,7 +1,7 @@
 package org.micrograd.core;
 
-import org.micrograd.functions.MathFunctions;
-import org.micrograd.functions.Utils;
+import org.micrograd.functions.api.MathFunction;
+import org.micrograd.util.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +17,7 @@ public class Layer {
         createNeurons(neuronNumOfInputs, numOfNeurons);
     }
 
-    public List<Node> stimulateLayer(List<Node> input, MathFunctions activationFunction) {
+    public List<Node> stimulateLayer(List<Node> input, MathFunction activationFunction) {
         var res = new ArrayList<Node>();
         for (Neuron neuron : neurons) {
             res.add(neuron.stimulateNeuron(input, activationFunction));

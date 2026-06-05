@@ -1,9 +1,9 @@
 package org.micrograd.core;
 
 import junit.framework.TestCase;
-import org.micrograd.functions.MathFunctions;
-import org.micrograd.functions.Utils;
+import org.micrograd.functions.registry.MathFunctions;
 import org.micrograd.util.DrawGraph;
+import org.micrograd.util.Utils;
 
 import java.util.List;
 
