@@ -70,7 +70,7 @@ public enum MathFunctions {
                 Node firstOperNode = operandNodes.getFirst();
                 var secondOperNode = operandNodes.get(1);
                 firstOperNode.grad += resultNode.grad;
-                secondOperNode.grad += resultNode.grad;
+                secondOperNode.grad -= resultNode.grad;
             }
         }
 
@@ -181,9 +181,11 @@ public enum MathFunctions {
             if (operandNodes != null && !operandNodes.isEmpty()) {
                 var base = operandNodes.getFirst().value;
                 var power = operandNodes.get(1).value;
+                var value = resultNode.value; // x^y
                 // f(x) = x^y, then diff is f'(x) = y * (x*(y-1))
                 var gradOfResultFunction = power * Math.pow(base, power - 1);
                 operandNodes.getFirst().grad += (float) (resultNode.grad * gradOfResultFunction);
+                operandNodes.get(1).grad += resultNode.grad * (float) (value * Math.log(base));
             }
         }
 
