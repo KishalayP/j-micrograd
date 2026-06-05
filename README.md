@@ -66,22 +66,16 @@ Node w = new Node("w", -3.0f);
 Node n = x.multiply(w).add(new Node("b", 1.0f));
 Node o = n.getActivationVal(MathFunctions.TANH);
 // backprop
-o.
-
-fillGrad();
+o.fillGrad();
 // inspect gradients
-System.out.
-
-println(w.grad);
+System.out.println(w.grad);
 ```
 
 Train the sample MLP (tests demonstrate API):
 
 ```java
 var mlp = new MLP("mlp", 3, List.of(4, 4, 1));
-mlp.
-
-train(100,0.01f,inputList, expectedOutputs, MathFunctions.TANH, ErrorMathFunctions.MSE);
+mlp.train(100,0.01f,inputList, expectedOutputs, MathFunctions.TANH, ErrorMathFunctions.MSE);
 ```
 
 Design notes
