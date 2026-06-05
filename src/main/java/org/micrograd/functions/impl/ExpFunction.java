@@ -18,8 +18,8 @@ public class ExpFunction extends AbstractMathFunction {
 
     @Override
     public void backFillGradVal(Node resultNode, List<Node> operandNodes) {
-        if (operandNodes != null && operandNodes.size() >= 1) {
-            Node operand = operandNodes.get(0);
+        if (operandNodes != null && !operandNodes.isEmpty()) {
+            Node operand = operandNodes.getFirst();
             // derivative of exp(x) is exp(x) which equals resultNode.value
             operand.grad += resultNode.grad * resultNode.value;
         }

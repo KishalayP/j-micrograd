@@ -25,7 +25,7 @@ public class Neuron {
     }
 
     public List<Node> getParameters() {
-        var res = new ArrayList<Node>(weights);
+        var res = new ArrayList<>(weights);
         res.add(bias);
         return res;
     }

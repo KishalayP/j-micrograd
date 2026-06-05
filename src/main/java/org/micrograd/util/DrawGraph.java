@@ -29,15 +29,15 @@ public class DrawGraph {
 
         // Pass empty map; DrawGraph will recalculate positions for left-to-right layout
         Map<Node, Position> positions = new HashMap<>();
-        return DrawGraph.renderGraph(nodes, positions);
+        return DrawGraph.renderGraph(nodes);
     }
 
     // Build ASCII graph grid (left-to-right layout)
-    private static String renderGraph(List<Node> nodes, Map<Node, Position> positionsMap) {
+    private static String renderGraph(List<Node> nodes) {
         if (nodes.isEmpty()) return "";
 
         // The last node in post-order is the root (head)
-        Node head = nodes.get(nodes.size() - 1);
+        Node head = nodes.getLast();
 
         // Compute positions with a left-to-right layout where operator/parent nodes
         // are placed in front of (to the right of) their operand nodes and aligned
@@ -81,7 +81,7 @@ public class DrawGraph {
                 }
             }
 
-            if (chosenConsumer != null && chosenPos != null) {
+            if (chosenConsumer != null) {
                 int w = boxWidths.getOrDefault(leaf, leaf.toString().length() + 4);
                 int x = Math.max(0, chosenPos.x - horizontalSpacing - w);
                 int y;
@@ -189,32 +189,6 @@ public class DrawGraph {
             }
         }
         return sb.toString().replaceAll("\n+$", "");
-    }
-
-    private static void calculateDistFromRoot(Node node, int dist, Map<Node, Integer> dists) {
-        dists.put(node, Math.max(dists.getOrDefault(node, 0), dist));
-        if (node.prev != null) {
-            for (Node prev : node.prev) {
-                calculateDistFromRoot(prev, dist + 1, dists);
-            }
-        }
-    }
-
-    private static int calculateDepth(Node node, Map<Node, Integer> depths) {
-        if (depths.containsKey(node)) {
-            return depths.get(node);
-        }
-
-        int maxChildDepth = 0;
-        if (node.prev != null && !node.prev.isEmpty()) {
-            for (Node child : node.prev) {
-                maxChildDepth = Math.max(maxChildDepth, calculateDepth(child, depths));
-            }
-        }
-
-        int depth = maxChildDepth + 1;
-        depths.put(node, depth);
-        return depth;
     }
 
     private static void collectPostOrder(Node node, List<Node> nodes, Set<Node> visited) {
@@ -351,10 +325,9 @@ public class DrawGraph {
         // shift segStart left as far as the source horizontal allows so the label
         // can fit just before the arrow head.
         if (label != null && available < labelLen) {
-            int needed = labelLen;
-            int candidateStart = Math.max(fromX, arrowHeadX - needed - 1);
+            int candidateStart = Math.max(fromX, arrowHeadX - labelLen - 1);
             int candidateAvailable = segEnd - candidateStart + 1;
-            if (candidateAvailable >= needed) {
+            if (candidateAvailable >= labelLen) {
                 segStart = candidateStart;
                 available = candidateAvailable;
             }
@@ -368,8 +341,7 @@ public class DrawGraph {
             // If not enough room, try to shift segStart left as far as possible (but not past fromX)
             if (available < required) {
                 int need = required - available;
-                int newSegStart = Math.max(fromX, segStart - need);
-                segStart = newSegStart;
+                segStart = Math.max(fromX, segStart - need);
                 available = segEnd - segStart + 1;
             }
 

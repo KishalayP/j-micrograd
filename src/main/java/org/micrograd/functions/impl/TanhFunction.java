@@ -19,9 +19,9 @@ public class TanhFunction extends AbstractMathFunction {
 
     @Override
     public void backFillGradVal(Node resultNode, List<Node> operandNodes) {
-        if (operandNodes != null && operandNodes.size() >= 1) {
+        if (operandNodes != null && !operandNodes.isEmpty()) {
             var gradOfResultFunction = 1 - (resultNode.value * resultNode.value);
-            operandNodes.get(0).grad += resultNode.grad * gradOfResultFunction;
+            operandNodes.getFirst().grad += resultNode.grad * gradOfResultFunction;
         }
     }
 
