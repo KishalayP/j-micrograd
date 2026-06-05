@@ -20,8 +20,14 @@ public class Neuron {
         this.bias = new Node(createNodeName(this.name, "b"), Utils.randomFloatInRange(-1, 1));
     }
 
-    public Node activateNeuron(List<Node> input, MathFunctions mathFunctions) {
+    public Node stimulateNeuron(List<Node> input, MathFunctions mathFunctions) {
         return getSumOfSynapsesNodes(input).getActivationVal(createNodeName(name, "r"), mathFunctions);
+    }
+
+    public List<Node> getParameters() {
+        var res = new ArrayList<Node>(weights);
+        res.add(bias);
+        return res;
     }
 
     private Node getSumOfSynapsesNodes(List<Node> input) {

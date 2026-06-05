@@ -2,10 +2,7 @@ package org.micrograd.core;
 
 import org.micrograd.functions.MathFunctions;
 
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static org.micrograd.functions.MathFunctions.*;
 
@@ -102,8 +99,12 @@ public class Node {
     }
 
     public void fillGrad() {
+        List<Node> sortedTopological = sortTopological();
+        for (Node node : sortedTopological) {
+            node.grad = 0;
+        }
         this.grad = 1;
-        for (Node node : sortTopological()) {
+        for (Node node : sortedTopological) {
             node.fillBackwardGrad();
         }
     }
@@ -114,14 +115,15 @@ public class Node {
         }
     }
 
-    private Set<Node> sortTopological() {
-        var result = new LinkedHashSet<Node>();
+    private List<Node> sortTopological() {
+        var result = new LinkedList<Node>();
         var visited = new HashSet<Node>();
         sortTopological(this, result, visited);
-        return result.reversed();
+        Collections.reverse(result);
+        return result;
     }
 
-    private void sortTopological(Node currentNode, Set<Node> result, Set<Node> visited) {
+    private void sortTopological(Node currentNode, List<Node> result, Set<Node> visited) {
         if (currentNode.prev == null) {
             result.add(currentNode);
             return;

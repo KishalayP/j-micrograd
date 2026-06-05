@@ -17,10 +17,18 @@ public class Layer {
         createNeurons(neuronNumOfInputs, numOfNeurons);
     }
 
-    public List<Node> activateLayer(List<Node> input, MathFunctions activationFunction) {
+    public List<Node> stimulateLayer(List<Node> input, MathFunctions activationFunction) {
         var res = new ArrayList<Node>();
         for (Neuron neuron : neurons) {
-            res.add(neuron.activateNeuron(input, activationFunction));
+            res.add(neuron.stimulateNeuron(input, activationFunction));
+        }
+        return res;
+    }
+
+    public List<Node> getParameters() {
+        var res = new ArrayList<Node>();
+        for (Neuron neuron : neurons) {
+            res.addAll(neuron.getParameters());
         }
         return res;
     }
