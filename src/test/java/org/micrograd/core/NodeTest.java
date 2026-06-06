@@ -1,8 +1,8 @@
-package org.micrograd;
+package org.micrograd.core;
 
 import org.junit.Test;
-import org.micrograd.core.Node;
-import org.micrograd.functions.MathFunctions;
+import org.micrograd.functions.registry.MathFunctions;
+import org.micrograd.util.DrawGraph;
 
 import static org.junit.Assert.assertEquals;
 
@@ -154,6 +154,8 @@ public class NodeTest {
         assertEquals("w1.grad should equal x1 * n.grad", x1.value * expectedNGrad2, w1.grad, 1e-6f);
         assertEquals("x2.grad should equal w2 * n.grad", w2.value * expectedNGrad2, x2.grad, 1e-6f);
         assertEquals("w2.grad should equal x2 * n.grad", x2.value * expectedNGrad2, w2.grad, 1e-6f);
+
+        System.out.println(DrawGraph.getGraphDisplayString(o));
     }
 
     @Test
@@ -194,5 +196,44 @@ public class NodeTest {
 
         assertEquals("a.grad should be 2.0 since b = a+a", 2.0f, a.grad, 1e-6f);
         assertEquals("b.grad should be 1.0 (seed)", 1.0f, b.grad, 1e-6f);
+    }
+
+    @Test
+    public void testNN7() {
+        var x1 = new Node("x1", 2);
+        var x2 = new Node("x2", 0);
+        var w1 = new Node("w1", -3);
+        var w2 = new Node("w2", 1);
+        var b = new Node("b", 6.8814f);
+        var one = new Node("one", 1);
+        var x1w1 = x1.multiply(w1);
+        var x2w2 = x2.multiply(w2);
+        var x1w1xx2w2 = x1w1.add(x2w2);
+        var n = x1w1xx2w2.add("n", b);
+        var d = n.applyFunction("d", 2, MathFunctions.MUL);
+        var e = d.getActivationVal("e", MathFunctions.EXP);
+        Node o = (e.applyFunction("e1", 1, MathFunctions.SUB)).divide(e.applyFunction("e2", one, MathFunctions.ADD));
+
+        // Forward pass: check n and activation o
+        float expectedN = x1w1xx2w2.value + b.value; // n = x1*w1 + x2*w2 + b
+        assertEquals("n.value should equal x1*w1 + x2*w2 + b", expectedN, n.value, 1e-6f);
+        float expectedO = (float) Math.tanh(expectedN); // o = tanh(n)
+        assertEquals("o.value should equal tanh(n)", expectedO, o.value, 1e-6f);
+
+        // Automatic backprop: use fillGrad to propagate gradients from o
+        o.fillGrad();
+        System.out.println(DrawGraph.getGraphDisplayString(o));
+
+        // Validate gradients produced by automatic backprop
+        float expectedNGrad2 = 1 - (o.value * o.value); // tanh' at n
+        assertEquals("n.grad should be tanh'(n)", expectedNGrad2, n.grad, 1e-6f);
+        assertEquals("b.grad should equal n.grad (bias)", expectedNGrad2, b.grad, 1e-6f); // bias receives same gradient
+        assertEquals("sum node grad should equal n.grad", expectedNGrad2, x1w1xx2w2.grad, 1e-6f); // add node
+        assertEquals("x1*w1 node grad should equal n.grad", expectedNGrad2, x1w1.grad, 1e-6f); // multiplication nodes
+        assertEquals("x2*w2 node grad should equal n.grad", expectedNGrad2, x2w2.grad, 1e-6f);
+        assertEquals("x1.grad should equal w1 * n.grad", w1.value * expectedNGrad2, x1.grad, 1e-6f);
+        assertEquals("w1.grad should equal x1 * n.grad", x1.value * expectedNGrad2, w1.grad, 1e-6f);
+        assertEquals("x2.grad should equal w2 * n.grad", w2.value * expectedNGrad2, x2.grad, 1e-6f);
+        assertEquals("w2.grad should equal x2 * n.grad", x2.value * expectedNGrad2, w2.grad, 1e-6f);
     }
 }

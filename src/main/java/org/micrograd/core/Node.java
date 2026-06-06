@@ -1,13 +1,9 @@
 package org.micrograd.core;
 
-import org.micrograd.functions.MathFunctions;
+import org.micrograd.functions.api.MathFunction;
+import java.util.*;
 
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
-
-import static org.micrograd.functions.MathFunctions.*;
+import static org.micrograd.functions.registry.MathFunctions.*;
 
 public class Node {
 
@@ -15,26 +11,26 @@ public class Node {
     public float value;
     public float grad;
     public List<Node> prev;
-    public MathFunctions operatorFunction;
+    public MathFunction operatorFunction;
 
-    public Node(String name, Node operNode, MathFunctions operatorFunction) {
+    public Node(String name, float value) {
+        this.name = name;
+        this.value = value;
+        this.grad = 0.0f;
+    }
+
+    public Node(String name, Node operNode, MathFunction operatorFunction) {
         this.name = name.isEmpty() ? operatorFunction.getRepresentation(operNode.name) : name;
         this.value = operatorFunction.applyFunction(operNode.value);
         this.prev = List.of(operNode);
         this.operatorFunction = operatorFunction;
     }
 
-    public Node(String name, Node firstOperNode, Node secondOperNode, MathFunctions operatorFunction) {
+    public Node(String name, Node firstOperNode, Node secondOperNode, MathFunction operatorFunction) {
         this.name = name.isEmpty() ? operatorFunction.getRepresentation(firstOperNode.name, secondOperNode.name) : name;
         this.value = operatorFunction.applyFunction(firstOperNode.value, secondOperNode.value);
         this.prev = List.of(firstOperNode, secondOperNode);
         this.operatorFunction = operatorFunction;
-    }
-
-    public Node(String name, float value) {
-        this.name = name;
-        this.value = value;
-        this.grad = 0.0f;
     }
 
     public Node add(String newName, Node toOperate) {
@@ -45,6 +41,18 @@ public class Node {
         return new Node("", this, toOperate, ADD);
     }
 
+    public Node subtract(String newName, Node toOperate) {
+        return new Node(newName, this, toOperate, SUB);
+    }
+
+    public Node subtract(Node toOperate) {
+        return new Node("", this, toOperate, SUB);
+    }
+
+    public Node multiply(String newName, float toOperate) {
+        return new Node(newName, this, new Node("__" + newName, toOperate), MUL);
+    }
+
     public Node multiply(String newName, Node toOperate) {
         return new Node(newName, this, toOperate, MUL);
     }
@@ -53,17 +61,49 @@ public class Node {
         return new Node("", this, toOperate, MUL);
     }
 
-    public Node getActivationVal(String name, MathFunctions activationFunction) {
+    public Node divide(String newName, Node toOperate) {
+        return new Node(newName, this, toOperate, DIV);
+    }
+
+    public Node divide(Node toOperate) {
+        return new Node("", this, toOperate, DIV);
+    }
+
+    public Node applyFunction(String newName, float toOperate, MathFunction activationFunction) {
+        return new Node(newName, this, new Node("__" + newName, toOperate), activationFunction);
+    }
+
+    public Node applyFunction(String newName, Node toOperate, MathFunction activationFunction) {
+        return new Node(newName, this, toOperate, activationFunction);
+    }
+
+    public Node applyFunction(String newName, MathFunction activationFunction) {
+        return new Node(newName, this, activationFunction);
+    }
+
+    public Node applyFunction(Node toOperate, MathFunction activationFunction) {
+        return new Node("", this, toOperate, activationFunction);
+    }
+
+    public Node applyFunction(MathFunction activationFunction) {
+        return new Node("", this, activationFunction);
+    }
+
+    public Node getActivationVal(String name, MathFunction activationFunction) {
         return new Node(name, this, activationFunction);
     }
 
-    public Node getActivationVal(MathFunctions activationFunction) {
+    public Node getActivationVal(MathFunction activationFunction) {
         return new Node("", this, activationFunction);
     }
 
     public void fillGrad() {
+        List<Node> sortedTopological = sortTopological();
+        for (Node node : sortedTopological) {
+            node.grad = 0;
+        }
         this.grad = 1;
-        for (Node node : sortTopological()) {
+        for (Node node : sortedTopological) {
             node.fillBackwardGrad();
         }
     }
@@ -74,14 +114,15 @@ public class Node {
         }
     }
 
-    private Set<Node> sortTopological() {
-        var result = new LinkedHashSet<Node>();
+    private List<Node> sortTopological() {
+        var result = new LinkedList<Node>();
         var visited = new HashSet<Node>();
         sortTopological(this, result, visited);
-        return result.reversed();
+        Collections.reverse(result);
+        return result;
     }
 
-    private void sortTopological(Node currentNode, Set<Node> result, Set<Node> visited) {
+    private void sortTopological(Node currentNode, List<Node> result, Set<Node> visited) {
         if (currentNode.prev == null) {
             result.add(currentNode);
             return;
